@@ -1,6 +1,5 @@
 <script setup>
 import { ref, watch } from 'vue'
-import { ElMessage } from 'element-plus'
 import { User, Lock } from '@element-plus/icons-vue'
 import { userLoginService } from '@/api/user'
 import { useUserStore } from '@/stores'
