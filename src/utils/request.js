@@ -18,6 +18,7 @@ request.interceptors.request.use(
     return config
   },
   (error) => {
+    ElMessage.error('服务异常')
     return Promise.reject(error)
   }
 )
@@ -31,7 +32,7 @@ request.interceptors.response.use(
     return Promise.reject(response.data)
   },
   (error) => {
-    ElMessage.error(error.response.data.message || '服务异常')
+    ElMessage.error(error.response?.data.message || '服务异常')
     if (error.response?.status === 401) {
       router.push('/login')
     }
