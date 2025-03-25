@@ -10,3 +10,5 @@ export const userRegisterService = ({ userName, userPassword, userSex }) =>
     userPassword,
     userSex
   })
+export const userGetInfoService = () => request.get('/user/info')
+export const userLogoutService = () => request.post('/user/logout')

@@ -1,7 +1,7 @@
 <script setup>
 import { ref, watch } from 'vue'
 import { User, Lock } from '@element-plus/icons-vue'
-import { userLoginService } from '@/api/user'
+import { userLoginService, userRegisterService } from '@/api/user'
 import { useUserStore } from '@/stores'
 import { useRouter, useRoute } from 'vue-router'
 // 控制是否显示登录
@@ -65,15 +65,11 @@ const handleLogin = async () => {
   router.replace(url)
 }
 
-// 注册操作
-// const handleRegister = async () => {
-//   await formRef.value.validate()
-//   await userRegisterService(dataForm.value)
-//   isLogin.value = true
-// }
-const handleRegister = () => {
-  ElMessage.error('服务异常')
-  console.log('asd')
+//注册操作
+const handleRegister = async () => {
+  await formRef.value.validate()
+  await userRegisterService(dataForm.value)
+  isLogin.value = true
 }
 //清空表单
 watch(isLogin, () => {
