@@ -31,7 +31,7 @@ const rules = {
     { required: true, message: '昵称不能为空', trigger: 'blur' },
     { min: 2, max: 10, message: '昵称长度需在2-10个字符之间', trigger: 'blur' }
   ],
-  password: [
+  userPassword: [
     { required: true, message: '密码不能为空', trigger: 'blur' },
     { min: 6, max: 15, message: '密码长度需在6-15个字符之间', trigger: 'blur' },
     {
@@ -44,7 +44,7 @@ const rules = {
     { required: true, message: '请确认密码', trigger: 'blur' },
     {
       validator: (rule, value, callback) => {
-        if (value !== dataForm.value.password) {
+        if (value !== dataForm.value.userPassword) {
           callback(new Error('两次密码不一致'))
         } else {
           callback()
@@ -60,6 +60,16 @@ const handleLogin = async () => {
   await formRef.value.validate()
   const res = await userLoginService(dataForm.value)
   userStore.setTocken(res.token)
+
+  //TODO:json-server
+  if (res.length === 0) {
+    ElMessage.error('登录失败')
+    return
+  }
+  userStore.setTocken('123')
+  userStore.setUser(res[0])
+  //delete
+
   ElMessage.success('登录成功')
   const url = route.query.redirect || '/'
   router.replace(url)
@@ -75,7 +85,7 @@ const handleRegister = async () => {
 watch(isLogin, () => {
   dataForm.value = {
     userName: '',
-    password: '',
+    userPassword: '',
     confirmPassword: '',
     userSex: '1'
   }
@@ -104,9 +114,9 @@ watch(isLogin, () => {
           />
         </el-form-item>
 
-        <el-form-item prop="password">
+        <el-form-item prop="userPassword">
           <el-input
-            v-model="dataForm.password"
+            v-model="dataForm.userPassword"
             :prefix-icon="Lock"
             type="password"
             placeholder="请输入密码"
@@ -149,9 +159,9 @@ watch(isLogin, () => {
           />
         </el-form-item>
 
-        <el-form-item prop="password">
+        <el-form-item prop="userPassword">
           <el-input
-            v-model="dataForm.password"
+            v-model="dataForm.userPassword"
             type="password"
             :prefix-icon="Lock"
             placeholder="请输入密码"

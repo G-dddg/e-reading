@@ -13,7 +13,7 @@ export const useUserStore = defineStore(
       token.value = ''
     }
     //数据
-    const userInfo = ref({
+    const user = ref({
       isVip: '',
       status: '',
       userCredit: 0,
@@ -25,15 +25,15 @@ export const useUserStore = defineStore(
       version: 0,
       vipTime: ''
     })
-    const getUserInfo = async () => {
+    const getUser = async () => {
       const res = await userGetInfoService()
-      userInfo.value = res.data
+      user.value = res.data
     }
-    const setUserInfo = (newUserInfo) => {
-      userInfo.value = newUserInfo
+    const setUser = (newUserInfo) => {
+      user.value = newUserInfo
     }
-    const removeUserInfo = () => {
-      userInfo.value = {
+    const removeUser = () => {
+      user.value = {
         isVip: '',
         status: '',
         userCredit: 0,
@@ -50,9 +50,10 @@ export const useUserStore = defineStore(
       token,
       setTocken,
       removeToken,
-      getUserInfo,
-      setUserInfo,
-      removeUserInfo
+      user,
+      getUser,
+      setUser,
+      removeUser
     }
   },
   {

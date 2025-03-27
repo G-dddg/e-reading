@@ -5,16 +5,18 @@ import {
   User,
   SwitchButton
 } from '@element-plus/icons-vue'
-import { onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useUserStore } from '@/stores'
 import { useRouter } from 'vue-router'
 import { userLogoutService } from '@/api/user'
-import { confirmTocken } from '@/utils/methods'
+import { confirmToken } from '@/utils/methods'
 //获取用户信息
 const userStore = useUserStore()
 onMounted(() => {
-  if (!userStore.token) userStore.getUserInfo()
+  //TODO:正式运用时取消注释
+  // if (!userStore.token) userStore.getUser()
   // userStore.userName = 'asdasd'
+  console.log(userStore.user)
 })
 //路由
 const router = useRouter()
@@ -26,25 +28,27 @@ const handleLogout = async () => {
     cancelButtonText: '取消'
   })
   await userLogoutService()
-  userStore.removeUserInfo()
+  userStore.removeUser()
   ElMessage.success('退出成功')
   router.push('/login')
 }
-const handleSelect = (key) => {
-  if (key === 'bookshelf') {
-    confirmTocken()
-  }
-}
 //处理菜单
+const activeMenu = ref('home')
+const handleSelect = async (key) => {
+  if (key === 'bookshelf') {
+    await confirmToken()
+  }
+  activeMenu.value = key
+}
 </script>
 <template>
   <el-container class="layout-container">
     <el-header>
       <div class="header">
         <span><strong>在线阅读系统</strong></span>
-        <el-dropdown v-if="userStore.userName !== undefined">
+        <el-dropdown v-if="userStore.user.userName !== undefined">
           <span class="el-dropdown__box">
-            <span>用户：{{ userStore.userName }}</span>
+            <span>用户：{{ userStore.user.userName }}</span>
             <el-icon><CaretBottom /></el-icon>
           </span>
           <template #dropdown>
@@ -92,7 +96,7 @@ const handleSelect = (key) => {
             @select="handleSelect"
             :ellipsis="false"
             mode="horizontal"
-            default-active="0"
+            default-active="home"
           >
             <el-menu-item index="home">
               <span>首页</span>
@@ -105,8 +109,12 @@ const handleSelect = (key) => {
             </el-menu-item>
           </el-menu>
         </el-header>
+        <!-- 主体 -->
         <el-main>
-          <router-view></router-view>
+          <div v-if="!userStore.token && activeMenu === 'bookshelf'">
+            您还未登录，请先登录
+          </div>
+          <div v-else>主体</div>
         </el-main>
       </el-container>
     </el-container>

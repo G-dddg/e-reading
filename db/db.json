@@ -1,0 +1,28 @@
+{
+  "users": [
+    {
+      "userId": 1,
+      "userName": "testuser",
+      "userPassword": "123456",
+      "userSex": "1",
+      "isVip": "1",
+      "vipTime": "2025-12-31T23:59:59",
+      "userCredit": 100.0,
+      "userRegTime": "2023-05-20T14:30:00",
+      "status": "1",
+      "version": 0
+    },
+    {
+      "userId": 2,
+      "userName": "johndoe",
+      "userPassword": "password123",
+      "userSex": "0",
+      "isVip": "0",
+      "vipTime": null,
+      "userCredit": 50.5,
+      "userRegTime": "2024-01-15T10:00:00",
+      "status": "1",
+      "version": 0
+    }
+  ]
+}
