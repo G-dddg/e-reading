@@ -5,19 +5,15 @@ import {
   User,
   SwitchButton
 } from '@element-plus/icons-vue'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useUserStore } from '@/stores'
 import { useRouter } from 'vue-router'
 import { userLogoutService } from '@/api/user'
 import { confirmToken } from '@/utils/methods'
+import LargeBookItem from './components/LargeBookItem.vue'
+import SmallBookItem from './components/SmallBookItem.vue'
 //获取用户信息
 const userStore = useUserStore()
-onMounted(() => {
-  //TODO:正式运用时取消注释
-  // if (!userStore.token) userStore.getUser()
-  // userStore.userName = 'asdasd'
-  console.log(userStore.user)
-})
 //路由
 const router = useRouter()
 //退出登录
@@ -40,6 +36,81 @@ const handleSelect = async (key) => {
   }
   activeMenu.value = key
 }
+//item类型
+const isLargeScreen = ref(window.innerWidth > 768)
+const updateScreenSize = () => {
+  isLargeScreen.value = window.innerWidth > 768
+  console.log(window.innerWidth)
+  console.log(isLargeScreen)
+}
+onMounted(() => {
+  //TODO:正式运用时取消注释,获取用户信息
+  // if (!userStore.token) userStore.getUser()
+  // userStore.userName = 'asdasd'
+
+  // 添加窗口调整事件监听器
+  window.addEventListener('resize', updateScreenSize)
+})
+onUnmounted(() => {
+  window.removeEventListener('resize', updateScreenSize)
+})
+// 书籍列表
+const books = ref([
+  {
+    cover: '@/assets/login_pic.png',
+    title: '在云上的日子',
+    author: '索斟政编',
+    priceType: '免费',
+    category: '文学',
+    description:
+      '一本关于青春、梦想与成长的故事，记录了云端之上的生活点滴，充满诗意与思考。'
+  },
+  {
+    cover: '@/assets/login_pic.png',
+    title: '人间草木',
+    author: '汪曾祺',
+    priceType: '付费',
+    category: '散文',
+    description:
+      '汪曾祺笔下的世间草木，人情风物，温暖而细腻，让人感受到最纯真的生活气息。'
+  },
+  {
+    cover: '@/assets/login_pic.png',
+    title: '三体',
+    author: '刘慈欣',
+    priceType: 'VIP专享',
+    category: '科幻',
+    description:
+      '人类文明与外星文明的生死较量，一场跨越宇宙的思维碰撞，揭示科学与哲学的终极命re agr题。'
+  },
+  {
+    cover: '@/assets/login_pic.png',
+    title: '白夜行',
+    author: '东野圭吾',
+    priceType: '付费',
+    category: '推理',
+    description:
+      '一场跨越十九年的追踪调查，隐藏在黑暗中的秘密，谁才是真正的受害者？'
+  },
+  {
+    cover: '@/assets/login_pic.png',
+    title: '解忧杂货店',
+    author: '东野圭吾',
+    priceType: '免费',
+    category: '小说',
+    description:
+      '一间可以倾诉烦恼的杂货店，跨越时空的信件往来，温暖治愈每一个孤独的灵魂。'
+  },
+  {
+    cover: '@/assets/login_pic.png',
+    title: '小王子',
+    author: '安托万·德·圣-埃克苏佩里',
+    priceType: 'VIP专享',
+    category: '童话',
+    description:
+      '一位小王子在宇宙间的旅程，探索爱与责任，简单却充满哲理，带给人们深刻的感悟。'
+  }
+])
 </script>
 <template>
   <el-container class="layout-container">
@@ -114,7 +185,8 @@ const handleSelect = async (key) => {
           <div v-if="!userStore.token && activeMenu === 'bookshelf'">
             您还未登录，请先登录
           </div>
-          <div v-else>主体</div>
+          <LargeBookItem v-if="isLargeScreen" :books="books"></LargeBookItem>
+          <SmallBookItem v-else :books="books"></SmallBookItem>
         </el-main>
       </el-container>
     </el-container>
@@ -170,6 +242,9 @@ const handleSelect = async (key) => {
   }
   .el-menu :nth-child(3) {
     margin-left: auto;
+  }
+  .el-main {
+    min-width: 360px;
   }
 }
 </style>

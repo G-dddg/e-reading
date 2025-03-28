@@ -17,17 +17,17 @@ request.interceptors.request.use(
     return config
   },
   (error) => {
-    ElMessage.error('服务异常')
+    ElMessage.error('请求异常')
     return Promise.reject(error)
   }
 )
 // 响应拦截器
 request.interceptors.response.use(
   (response) => {
-    if (response.status === 200) {
+    if (response.status === 200 || response.status === 201) {
       return response.data
     }
-    ElMessage.error(response.data.message || '服务异常')
+    ElMessage.error(response.data.message || '响应异常')
     return Promise.reject(response.data)
   },
   (error) => {

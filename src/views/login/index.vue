@@ -4,6 +4,7 @@ import { User, Lock } from '@element-plus/icons-vue'
 import { userLoginService, userRegisterService } from '@/api/user'
 import { useUserStore } from '@/stores'
 import { useRouter, useRoute } from 'vue-router'
+import { ElMessage } from 'element-plus'
 // 控制是否显示登录
 const isLogin = ref(true)
 
@@ -79,6 +80,7 @@ const handleLogin = async () => {
 const handleRegister = async () => {
   await formRef.value.validate()
   await userRegisterService(dataForm.value)
+  ElMessage.success('注册成功')
   isLogin.value = true
 }
 //清空表单
