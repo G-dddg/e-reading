@@ -1,4 +1,5 @@
 { 
   "/user/login*": "/users",
-  "/user/register": "/users"
+  "/user/register": "/users",
+  "/book/list*": "/books"
 }

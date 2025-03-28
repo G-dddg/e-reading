@@ -13,12 +13,9 @@ import request from '@/utils/request'
 // export const userLogoutService = () => request.post('/user/logout')
 export const userGetInfoService = () => request.get('/user/info')
 //TODO:json-server
-export const userLoginService = ({ userName, userPassword }) =>
+export const userLoginService = (params) =>
   request.get('/user/login', {
-    params: {
-      userName,
-      userPassword
-    }
+    params
   })
 export const userRegisterService = ({ userName, userPassword, userSex }) =>
   request.post('/user/register', {

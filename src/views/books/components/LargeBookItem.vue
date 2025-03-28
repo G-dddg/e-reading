@@ -2,22 +2,22 @@
   <el-row :gutter="20" class="book-container">
     <el-col
       v-for="item in books"
-      :key="item.title"
+      :key="item.bookId"
       :sm="12"
       :md="12"
       :lg="6"
       class="book-col"
     >
       <el-card shadow="hover" class="book-card">
-        <el-image class="book-cover" :src="item.cover" fit="cover" />
+        <el-image class="book-cover" :src="item.bookCover" fit="cover" />
         <div class="book-info">
-          <h3 class="book-title">{{ item.title }}</h3>
+          <h3 class="book-title">{{ item.bookName }}</h3>
           <p class="book-author">{{ item.author }}</p>
           <div class="book-tags">
-            <el-tag type="success" class="book-tag">{{
-              item.priceType
+            <el-tag type="success" class="book-tag">{{ item.isCharge }}</el-tag>
+            <el-tag class="book-category">{{
+              item.bookType.bookTypeName
             }}</el-tag>
-            <el-tag class="book-category">{{ item.category }}</el-tag>
           </div>
         </div>
       </el-card>

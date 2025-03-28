@@ -3,17 +3,19 @@
     shadow="hover"
     class="book-card"
     v-for="item in books"
-    :key="item.title"
+    :key="item.bookId"
   >
     <div class="book-content">
       <el-image class="book-cover" :src="item.cover" fit="cover" />
       <div class="book-info">
-        <h3 class="book-title">{{ item.title }}</h3>
+        <h3 class="book-title">{{ item.bookName }}</h3>
         <p class="book-author">{{ item.author }}</p>
-        <p class="book-description">{{ item.description }}</p>
+        <p class="book-description">{{ item.bookDesc }}</p>
         <div class="book-footer">
-          <el-tag type="success" class="book-tag">{{ item.priceType }}</el-tag>
-          <el-tag class="book-category">{{ item.category }}</el-tag>
+          <el-tag type="success" class="book-tag">{{ item.isCharge }}</el-tag>
+          <el-tag class="book-category">{{
+            item.bookType.bookTypeName
+          }}</el-tag>
           <el-button type="primary">开始阅读</el-button>
         </div>
       </div>
@@ -42,6 +44,7 @@ defineProps({
   .book-content {
     display: flex;
     align-items: center;
+    min-width: 260px;
   }
 }
 
