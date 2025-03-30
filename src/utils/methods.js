@@ -1,7 +1,5 @@
 import { useUserStore } from '@/stores'
 import router from '@/router'
-import { ElMessageBox } from 'element-plus'
-
 const userStore = useUserStore()
 
 export const confirmToken = async () => {

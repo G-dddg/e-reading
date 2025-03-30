@@ -1,50 +1,32 @@
 <script setup>
-import {
-  Search,
-  CaretBottom,
-  User,
-  SwitchButton
-} from '@element-plus/icons-vue'
+import { Search } from '@element-plus/icons-vue'
 import { ref, onMounted, onUnmounted } from 'vue'
-import { useUserStore } from '@/stores'
-import { useRouter } from 'vue-router'
-import { userLogoutService } from '@/api/user'
 import { confirmToken } from '@/utils/methods'
 import LargeBookItem from './components/LargeBookItem.vue'
 import SmallBookItem from './components/SmallBookItem.vue'
 import { bookGetListService, bookGetStartBooksService } from '@/api/book'
-//获取用户信息
-const userStore = useUserStore()
-//路由
-const router = useRouter()
-//退出登录
-const handleLogout = async () => {
-  await ElMessageBox.confirm('你确认要进行退出么', '温馨提示', {
-    type: 'warning',
-    confirmButtonText: '确认',
-    cancelButtonText: '取消'
-  })
-  await userLogoutService()
-  userStore.removeUser()
-  userStore.removeToken()
-  ElMessage.success('退出成功')
-  router.push('/login')
-}
+import MenuPerson from '@/components/MenuPerson.vue'
+import { useMenuStore } from '@/stores'
+import { storeToRefs } from 'pinia'
+//
+const isLogin = ref(false)
 //处理菜单
-const activeMenu = ref('home')
+const { activeMenu } = storeToRefs(useMenuStore())
 const handleSelect = async (key) => {
+  isloading.value = false
+  params.value = paramsDefault
+  activeMenu.value = key
   if (key === 'bookshelf') {
     await confirmToken()
     //TODO:获取用户收藏书籍列表
-    getBooks(bookGetStartBooksService)
+    if (isLogin.value) getBooks(bookGetStartBooksService)
   } else if (key === 'home') {
-    params.value = paramsDefault
     getBooks(bookGetListService)
   } else {
     //TODO:获取排行榜书籍列表
-    getBooks()
+    params.value = { ...paramsDefault }
+    getBooks(bookGetListService)
   }
-  activeMenu.value = key
 }
 //item类型
 const isLargeScreen = ref(window.innerWidth > 768)
@@ -66,6 +48,7 @@ const paramsDefault = {
 const params = ref({ ...paramsDefault })
 const getBooks = async (fetchFunction) => {
   isloading.value = true
+  books.value = []
   const res = await fetchFunction(params.value)
   books.value = res
   total.value = res.length
@@ -73,8 +56,13 @@ const getBooks = async (fetchFunction) => {
 }
 // 处理分页
 const handleCurrentChange = (page) => {
-  params.value.page = page
-  getBooks(params)
+  params.value.page = page - 1
+  window.scrollTo({ top: 0, behavior: 'smooth' }) // 回到顶部
+  if (activeMenu.value === 'bookshelf') {
+    getBooks(bookGetStartBooksService)
+  } else {
+    getBooks(bookGetListService)
+  }
 }
 onMounted(() => {
   //TODO:正式运用时取消注释,获取用户信息
@@ -95,33 +83,8 @@ onUnmounted(() => {
     <el-header>
       <div class="header">
         <span><strong>在线阅读系统</strong></span>
-        <el-dropdown v-if="userStore.user.userName !== undefined">
-          <span class="el-dropdown__box">
-            <span>用户：{{ userStore.user.userName }}</span>
-            <el-icon><CaretBottom /></el-icon>
-          </span>
-          <template #dropdown>
-            <el-dropdown-menu>
-              <el-dropdown-item command="profile" :icon="User"
-                >个人中心</el-dropdown-item
-              >
-              <el-dropdown-item
-                @click="handleLogout"
-                command="logout"
-                :icon="SwitchButton"
-                >退出登录</el-dropdown-item
-              >
-            </el-dropdown-menu>
-          </template>
-        </el-dropdown>
-        <span v-else>
-          <el-link
-            type="primary"
-            :underline="false"
-            @click="router.push('/login')"
-            >登录</el-link
-          >
-        </span>
+        <!-- 个人 -->
+        <MenuPerson @isLogin="isLogin"></MenuPerson>
       </div>
       <div v-if="false" class="advertisement">广告暂位</div>
       <div class="search">
@@ -145,7 +108,7 @@ onUnmounted(() => {
             @select="handleSelect"
             :ellipsis="false"
             mode="horizontal"
-            default-active="home"
+            :default-active="activeMenu"
           >
             <el-menu-item index="home">
               <span>首页</span>
@@ -179,19 +142,21 @@ onUnmounted(() => {
             />
           </div> -->
           <!-- TODO 更换-->
-          <div v-if="!userStore.token && activeMenu === 'bookshelf'">
+          <div v-if="!isLogin && activeMenu === 'bookshelf'">
             您还未登录，请先登录
           </div>
-          <LargeBookItem v-if="isLargeScreen" :books="books"></LargeBookItem>
-          <SmallBookItem v-else :books="books"></SmallBookItem>
-          <div style="display: flex; justify-content: center">
-            <el-pagination
-              v-model:current-page="params.page"
-              v-model:page-size="params.size"
-              layout="total, prev, pager, next, jumper"
-              :total="total"
-              @current-change="handleCurrentChange"
-            />
+          <div v-else>
+            <LargeBookItem v-if="isLargeScreen" :books="books"></LargeBookItem>
+            <SmallBookItem v-else :books="books"></SmallBookItem>
+            <div style="display: flex; justify-content: center">
+              <el-pagination
+                v-model:current-page="params.page"
+                v-model:page-size="params.size"
+                layout="total, prev, pager, next, jumper"
+                :total="total"
+                @current-change="handleCurrentChange"
+              />
+            </div>
           </div>
         </el-main>
       </el-container>
@@ -213,14 +178,6 @@ onUnmounted(() => {
       align-items: center;
       display: flex;
       justify-content: space-between;
-      .el-dropdown__box {
-        display: flex;
-        align-items: center;
-        width: auto;
-        &:focus {
-          outline: none;
-        }
-      }
     }
     .advertisement {
       height: 100px;
