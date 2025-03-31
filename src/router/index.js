@@ -7,8 +7,8 @@ const router = createRouter({
     { path: '/login', component: () => import('@/views/login/index.vue') },
     { path: '/books', component: () => import('@/views/books/BookLayout.vue') },
     {
-      path: '/book',
-      component: () => import('@/views/books/BookDetailLayout.vue')
+      path: '/book/:bookId',
+      component: () => import('@/views/book-detail/BookDetailLayout.vue')
     }
   ]
 })

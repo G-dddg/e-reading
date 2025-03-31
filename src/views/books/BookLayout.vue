@@ -1,15 +1,21 @@
 <script setup>
 import { Search } from '@element-plus/icons-vue'
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
 import { confirmToken } from '@/utils/methods'
 import LargeBookItem from './components/LargeBookItem.vue'
 import SmallBookItem from './components/SmallBookItem.vue'
 import { bookGetListService, bookGetStartBooksService } from '@/api/book'
 import MenuPerson from '@/components/MenuPerson.vue'
-import { useMenuStore } from '@/stores'
+import { useMenuStore, useUserStore } from '@/stores'
 import { storeToRefs } from 'pinia'
-//
-const isLogin = ref(false)
+
+//判断登录状态
+const userStore = useUserStore()
+const isLogin = computed(() => !!userStore.token)
+watch(isLogin, () => {
+  if (!isLogin.value && activeMenu.value === 'bookshelf')
+    isloading.value = false
+})
 //处理菜单
 const { activeMenu } = storeToRefs(useMenuStore())
 const handleSelect = async (key) => {
@@ -17,9 +23,9 @@ const handleSelect = async (key) => {
   params.value = paramsDefault
   activeMenu.value = key
   if (key === 'bookshelf') {
-    await confirmToken()
     //TODO:获取用户收藏书籍列表
     if (isLogin.value) getBooks(bookGetStartBooksService)
+    else await confirmToken()
   } else if (key === 'home') {
     getBooks(bookGetListService)
   } else {
@@ -43,13 +49,15 @@ const total = ref(0)
 const paramsDefault = {
   keyword: '',
   page: 0,
-  size: 10
+  size: 4
 }
 const params = ref({ ...paramsDefault })
 const getBooks = async (fetchFunction) => {
   isloading.value = true
   books.value = []
   const res = await fetchFunction(params.value)
+  //TODO:处理返回数据,res.data...
+  console.log(res)
   books.value = res
   total.value = res.length
   isloading.value = false
@@ -66,8 +74,7 @@ const handleCurrentChange = (page) => {
 }
 onMounted(() => {
   //TODO:正式运用时取消注释,获取用户信息
-  // if (!userStore.token) userStore.getUser()
-  // userStore.userName = 'asdasd'
+  if (isLogin.value) userStore.getUser()
   //获取书籍列表
   params.value = { ...paramsDefault }
   getBooks(bookGetListService)
@@ -84,7 +91,7 @@ onUnmounted(() => {
       <div class="header">
         <span><strong>在线阅读系统</strong></span>
         <!-- 个人 -->
-        <MenuPerson @isLogin="isLogin"></MenuPerson>
+        <MenuPerson></MenuPerson>
       </div>
       <div v-if="false" class="advertisement">广告暂位</div>
       <div class="search">
@@ -123,7 +130,7 @@ onUnmounted(() => {
         </el-header>
         <!-- 主体 -->
         <el-main v-loading="isloading" :element-loading-text="'加载中...'">
-          <!-- <div v-if="!userStore.token && activeMenu === 'bookshelf'">
+          <div v-if="!userStore.token && activeMenu === 'bookshelf'">
             您还未登录，请先登录
           </div>
           <LargeBookItem
@@ -131,7 +138,7 @@ onUnmounted(() => {
             :books="books.content"
           ></LargeBookItem>
           <SmallBookItem v-else :books="books.content"></SmallBookItem>
-          <-- 分页 ->
+          <!-- <-- 分页 -> -->
           <div style="display: flex; justify-content: center">
             <el-pagination
               v-model:current-page="books.pageNumber"
@@ -140,23 +147,6 @@ onUnmounted(() => {
               :total="books.totalElements"
               @current-change="handleCurrentChange"
             />
-          </div> -->
-          <!-- TODO 更换-->
-          <div v-if="!isLogin && activeMenu === 'bookshelf'">
-            您还未登录，请先登录
-          </div>
-          <div v-else>
-            <LargeBookItem v-if="isLargeScreen" :books="books"></LargeBookItem>
-            <SmallBookItem v-else :books="books"></SmallBookItem>
-            <div style="display: flex; justify-content: center">
-              <el-pagination
-                v-model:current-page="params.page"
-                v-model:page-size="params.size"
-                layout="total, prev, pager, next, jumper"
-                :total="total"
-                @current-change="handleCurrentChange"
-              />
-            </div>
           </div>
         </el-main>
       </el-container>

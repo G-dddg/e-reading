@@ -60,19 +60,10 @@ const rules = {
 const handleLogin = async () => {
   await formRef.value.validate()
   const res = await userLoginService(dataForm.value)
-  userStore.setTocken(res.token)
-
-  //TODO:json-server
-  if (res.length === 0) {
-    ElMessage.error('登录失败')
-    return
-  }
-  userStore.setTocken('123')
-  userStore.setUser(res[0])
-  //delete
-
+  console.log(res)
+  userStore.setTocken(res)
   ElMessage.success('登录成功')
-  const url = route.query.redirect || '/'
+  const url = route.query.backUrl || '/'
   router.replace(url)
 }
 

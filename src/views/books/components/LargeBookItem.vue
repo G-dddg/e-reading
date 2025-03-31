@@ -1,3 +1,17 @@
+<script setup>
+import { useRouter } from 'vue-router'
+const router = useRouter()
+defineProps({
+  books: {
+    type: Array,
+    required: true
+  }
+})
+const handleClick = (bookId) => {
+  console.log(bookId)
+  router.push(`/book/${bookId}`)
+}
+</script>
 <template>
   <el-row :gutter="20" class="book-container">
     <el-col
@@ -8,7 +22,11 @@
       :lg="6"
       class="book-col"
     >
-      <el-card shadow="hover" class="book-card">
+      <el-card
+        shadow="hover"
+        class="book-card"
+        @click="handleClick(item.bookId)"
+      >
         <el-image class="book-cover" :src="item.bookCover" fit="cover" />
         <div class="book-info">
           <h3 class="book-title">{{ item.bookName }}</h3>
@@ -24,15 +42,6 @@
     </el-col>
   </el-row>
 </template>
-
-<script setup>
-defineProps({
-  books: {
-    type: Array,
-    required: true
-  }
-})
-</script>
 
 <style scoped>
 /* 书籍卡片样式 */

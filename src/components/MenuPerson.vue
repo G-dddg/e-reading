@@ -1,12 +1,15 @@
 <script setup>
 import { CaretBottom, User, SwitchButton } from '@element-plus/icons-vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { userLogoutService } from '@/api/user'
 import { useUserStore } from '@/stores'
+import { computed } from 'vue'
 //获取用户信息
 const userStore = useUserStore()
 //路由
 const router = useRouter()
+const route = useRoute()
+//登出
 const handleLogout = async () => {
   await ElMessageBox.confirm('你确认要进行退出么', '温馨提示', {
     type: 'warning',
@@ -17,10 +20,16 @@ const handleLogout = async () => {
   userStore.removeUser()
   userStore.removeToken()
   ElMessage.success('退出成功')
-  router.push('/login')
 }
-defineEmits(['isLogin'])
-const isLogin = userStore.token !== ''
+//登录
+const handleLogin = () => {
+  router.push({
+    path: '/login',
+    query: { backUrl: route.fullPath }
+  })
+}
+
+const isLogin = computed(() => !!userStore.token)
 </script>
 <template>
   <el-dropdown v-if="isLogin">
@@ -43,7 +52,7 @@ const isLogin = userStore.token !== ''
     </template>
   </el-dropdown>
   <span v-else>
-    <el-link type="primary" :underline="false" @click="router.push('/login')"
+    <el-link type="primary" :underline="false" @click="handleLogin"
       >登录/注册</el-link
     >
   </span>

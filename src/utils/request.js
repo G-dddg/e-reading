@@ -2,7 +2,7 @@ import axios from 'axios'
 import { useUserStore } from '@/stores'
 import router from '@/router'
 
-const baseURL = 'http://localhost:3000'
+const baseURL = '/api'
 const request = axios.create({
   baseURL,
   timeout: 5000
@@ -12,7 +12,8 @@ request.interceptors.request.use(
   (config) => {
     const useStore = useUserStore()
     if (useStore.token) {
-      config.headers.Authorization = useUserStore.token
+      console.log('config.headers.Authorization = useStore.token')
+      config.headers.Authorization = `Bearer ${useStore.token}`
     }
     return config
   },
