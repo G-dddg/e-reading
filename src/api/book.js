@@ -1,15 +1,19 @@
 import request from '@/utils/request'
-
-// export const bookGetListService = (params) =>
-//   request.get('/book/list', {
-//     params
-//   })
-export const bookGetStartBooksService = (userId) =>
-  request.get(`/startBooks/user/${userId}`)
+import { useUserStore } from '@/stores'
+const userStore = useUserStore()
+//获取书籍列表
+export const bookGetListService = (params) =>
+  request.get('/book/list', {
+    params
+  })
+//获取书籍分类
+export const bookGetBookTypeService = () => request.get('/type/allType')
+//收藏书籍
+export const bookGetStartBooksService = () =>
+  request.get(`/starBooks/user/${userStore.user.userId}`)
+//排行榜
+export const bookGetBookRankService = ({ category, type }) =>
+  request.get(`/dashboard/top/${category}/${type}`)
+//书籍详情
 export const bookGetBookDetailService = (bookId) =>
   request.get(`/book/${bookId}`)
-
-//json-server
-export const bookGetListService = () => request.get(`/book/list`)
-// export const bookGetBookDetailService = (bookId) =>
-//   request.get(`/book/${bookId}`)

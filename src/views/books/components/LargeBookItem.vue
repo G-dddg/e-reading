@@ -29,10 +29,14 @@ const handleClick = (bookId) => {
       >
         <el-image class="book-cover" :src="item.bookCover" fit="cover" />
         <div class="book-info">
-          <h3 class="book-title">{{ item.bookName }}</h3>
-          <p class="book-author">{{ item.author }}</p>
+          <h3 class="book-title format">{{ item.bookName }}</h3>
+          <p class="book-author format">{{ item.author }}</p>
           <div class="book-tags">
-            <el-tag type="success" class="book-tag">{{ item.isCharge }}</el-tag>
+            <el-tag
+              :type="item.isCharge === 1 ? 'danger' : 'success'"
+              class="book-tag"
+              >{{ item.isCharge === 1 ? '收费' : '免费' }}</el-tag
+            >
             <el-tag class="book-category">{{
               item.bookType.bookTypeName
             }}</el-tag>
@@ -76,7 +80,15 @@ const handleClick = (bookId) => {
   font-size: 14px;
   color: gray;
 }
-
+/* 一行 */
+.format {
+  -webkit-line-clamp: 1; /* 限制行数 */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 8px;
+  display: -webkit-box;
+}
 /* 标签容器 */
 .book-tags {
   margin-top: 5px;

@@ -12,7 +12,11 @@
         <p class="book-author">{{ item.author }}</p>
         <p class="book-description">{{ item.bookDesc }}</p>
         <div class="book-footer">
-          <el-tag type="success" class="book-tag">{{ item.isCharge }}</el-tag>
+          <el-tag
+            :type="item.isCharge === 1 ? 'success' : 'danger'"
+            class="book-tag"
+            >{{ item.isCharge === 1 ? '收费' : '免费' }}</el-tag
+          >
           <el-tag class="book-category">{{
             item.bookType.bookTypeName
           }}</el-tag>

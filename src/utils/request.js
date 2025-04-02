@@ -12,7 +12,6 @@ request.interceptors.request.use(
   (config) => {
     const useStore = useUserStore()
     if (useStore.token) {
-      console.log('config.headers.Authorization = useStore.token')
       config.headers.Authorization = `Bearer ${useStore.token}`
     }
     return config
