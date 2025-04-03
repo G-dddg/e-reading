@@ -1,16 +1,12 @@
 <script setup>
 import { ref } from 'vue'
 import MenuPerson from '@/components/MenuPerson.vue'
-import { useMenuStore } from '@/stores'
-import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 //路由
 const rouster = useRouter()
 //菜单跳转
-const { activeMenu } = storeToRefs(useMenuStore())
 const handleNav = (path) => {
-  activeMenu.value = path
-  rouster.push('/')
+  rouster.push(`/books/${path}`)
 }
 //
 const logo = ref('')

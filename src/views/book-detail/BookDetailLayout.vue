@@ -48,12 +48,20 @@ onMounted(() => {
             <h2>{{ book.bookName }}</h2>
             <p>作者：{{ book.author }}</p>
             <div class="book-tag">
-              <el-tag type="success">{{ book.bookTypeName }}</el-tag>
-              <el-tag>{{ book.isCharge }}</el-tag>
+              <el-tag v-if="!!book.bookType">{{
+                book.bookType.bookTypeName
+              }}</el-tag>
+              <el-tag :type="book.isCharge === 1 ? 'danger' : 'success'">{{
+                book.isCharge === 1 ? '收费' : '免费'
+              }}</el-tag>
             </div>
             <div class="book-time">
-              <p>创建时间：{{ formatTime(book.createTime) }}</p>
-              <p>更新时间：{{ formatTime(book.updateTime) }}</p>
+              <p v-if="!!book.createTime">
+                创建时间：{{ formatTime(book.createTime) }}
+              </p>
+              <p v-if="!!book.updateTime">
+                更新时间：{{ formatTime(book.updateTime) }}
+              </p>
             </div>
             <p>总页数：{{ book.bookPage }}</p>
             <div class="book-actions">

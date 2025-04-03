@@ -8,6 +8,9 @@ export const bookGetListService = (params) =>
   })
 //获取书籍分类
 export const bookGetBookTypeService = () => request.get('/type/allType')
+//根据书籍分类获取书籍列表
+export const bookGetListByTypeService = (params) =>
+  request.get(`/book/list/${params.typeName}`, { params })
 //收藏书籍
 export const bookGetStartBooksService = () =>
   request.get(`/starBooks/user/${userStore.user.userId}`)

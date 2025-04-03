@@ -1,38 +1,61 @@
 <script setup>
-import { defineProps } from 'vue'
-import { computed } from 'vue'
+import { defineProps, computed, ref, onMounted } from 'vue'
 const props = defineProps({
-  bookTypes: {
+  array: {
     type: Array,
-    required: true
+    default: () => [],
+    validator: (value) => Array.isArray(value)
+  },
+  idKey: {
+    type: String,
+    default: 'id'
+  },
+  nameKey: {
+    type: String,
+    default: 'name'
   },
   title: {
     type: String,
     default: '分类'
+  },
+  default: {
+    type: String
   }
 })
 //添加全部选项
 const categories = computed(() => [
-  { bookTypeId: -1, bookTypeName: '全部' },
-  ...props.bookTypes
+  ...(props.default ? [] : [{ [props.idKey]: -1, [props.nameKey]: '全部' }]),
+  ...props.array
 ])
-//处理点击事件
-const handleSelect = (bookTypeName) => {
-  console.log(bookTypeName)
-  //跳转到书籍列表页面
+//传递的参数
+const emit = defineEmits(['select'])
+
+//初始化选项
+const selectedType = ref()
+const initSelect = () => {
+  selectedType.value = props.default ? props.array[0][props.idKey] : -1
 }
+//处理点击事件
+const handleSelect = (item) => {
+  selectedType.value = item[props.idKey]
+  emit('select', item)
+}
+onMounted(() => {
+  initSelect()
+})
 </script>
 <template>
   <div class="container">
     <div class="title">{{ title }}</div>
     <el-row>
-      <el-col :span="12" v-for="item in categories" :key="item.bookTypeId">
-        <el-link
-          :underline="false"
+      <el-col :span="12" v-for="item in categories" :key="item[idKey]">
+        <div
           class="item"
-          @click="handleSelect(item.bookTypeName)"
-          >{{ item.bookTypeName }}</el-link
+          :class="{ selected: item[idKey] === selectedType }"
+          @click="handleSelect(item)"
         >
+          {{ item[nameKey] }}
+        </div>
       </el-col>
     </el-row>
   </div>
@@ -54,18 +77,19 @@ const handleSelect = (bookTypeName) => {
   width: fit-content;
   background-color: white;
 }
-.el-col:focus {
-  background-color: burlywood;
-}
 .el-col {
   cursor: pointer;
-  align-items: center;
-  text-align: center;
   margin: 0 0 10px 0;
 }
-.el-link {
-  color: black;
-  font-size: 16px;
+.item {
+  align-items: center;
+  text-align: center;
   caret-color: transparent;
+}
+.selected {
+  border-radius: 3px;
+  background-color: #409eff;
+  color: white;
+  outline: 2px solid #409eff;
 }
 </style>

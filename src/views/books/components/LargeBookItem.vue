@@ -33,11 +33,12 @@ const handleClick = (bookId) => {
           <p class="book-author format">{{ item.author }}</p>
           <div class="book-tags">
             <el-tag
+              v-if="!!item.isCharge"
               :type="item.isCharge === 1 ? 'danger' : 'success'"
               class="book-tag"
               >{{ item.isCharge === 1 ? '收费' : '免费' }}</el-tag
             >
-            <el-tag class="book-category">{{
+            <el-tag class="book-category" v-if="!!item.bookType">{{
               item.bookType.bookTypeName
             }}</el-tag>
           </div>
