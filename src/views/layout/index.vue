@@ -1,6 +1,13 @@
 <script setup>
 import { Search } from '@element-plus/icons-vue'
 import MenuPerson from '@/components/MenuPerson.vue'
+import { onMounted } from 'vue'
+import { useUserStore } from '@/stores'
+
+const userStore = useUserStore()
+onMounted(() => {
+  userStore.getUser()
+})
 </script>
 <template>
   <el-container class="layout-container">

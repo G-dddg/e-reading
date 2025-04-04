@@ -2,17 +2,36 @@
 import { ref, onMounted } from 'vue'
 import MenuHeader from '@/components/MenuHeader.vue'
 import { useRoute } from 'vue-router'
-import { bookGetBookDetailService } from '@/api/book'
+import { bookGetBookDetailService, bookGetChapterListService } from '@/api/book'
+import { BUIsStarService, BUToggleStarService } from '@/api/book-user'
 import { formatTime } from '@/utils/format'
+import ChaptersList from '@/components/ChaptersList.vue'
+import { Check } from '@element-plus/icons-vue'
 // 获取路由参数
 const route = useRoute()
 // 书籍信息（静态示例数据）
 const bookId = route.params.bookId
-const book = ref({
-  bookCover: 'https://example.com/book-cover.jpg'
-})
+const book = ref({})
+//用户是否收藏
+const isStar = ref(false)
+const getIsStar = async () => {
+  const res = await BUIsStarService(bookId)
+  console.log(res)
+  isStar.value = res
+}
+//改变书籍收藏状态
+const changeStar = async () => {
+  const res = await BUToggleStarService(bookId)
+  console.log(res)
+  isStar.value = !isStar.value
+}
 //章节列表
 const chapters = ref([])
+const getChapters = async () => {
+  const res = await bookGetChapterListService(bookId)
+  console.log(res)
+  chapters.value = res
+}
 // 菜单
 const menu = ref(null)
 // 获取书籍信息
@@ -26,6 +45,8 @@ onMounted(() => {
   menu.value.open('bookDetail')
   console.log(bookId)
   getBookDetail()
+  getChapters()
+  getIsStar()
 })
 </script>
 <template>
@@ -66,7 +87,10 @@ onMounted(() => {
             <p>总页数：{{ book.bookPage }}</p>
             <div class="book-actions">
               <el-button type="primary">开始阅读</el-button>
-              <el-button type="warning">加入书架</el-button>
+              <el-button @click="changeStar">
+                <el-icon v-if="isStar"><Check /></el-icon
+                >{{ isStar ? '已收藏' : '加入书架' }}
+              </el-button>
             </div>
           </div>
         </div>
@@ -85,7 +109,7 @@ onMounted(() => {
         <template #header>
           <h3>目录</h3>
         </template>
-        <div>{{ chapters }}</div>
+        <ChaptersList :chapters="chapters"></ChaptersList>
       </el-card>
     </el-main>
   </el-container>
@@ -111,19 +135,22 @@ onMounted(() => {
         height: 100%;
       }
     }
-    .book-time {
-      font-size: small;
-      color: grey;
+    .book-info {
+      padding-bottom: 25px;
+      .book-tag {
+        display: flex;
+        gap: 10px;
+      }
+      .book-time {
+        font-size: small;
+        color: grey;
+      }
+      .book-actions {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+      }
     }
-    .book-tag {
-      display: flex;
-      gap: 10px;
-    }
-  }
-  .book-actions {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
   }
 }
 </style>

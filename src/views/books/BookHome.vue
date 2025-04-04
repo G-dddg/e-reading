@@ -37,12 +37,11 @@ const getBookData = async (type) => {
   try {
     let res
     if (!type || type === '全部') {
-      console.log('全部', params.value)
       res = await bookGetListService(params.value)
     } else {
-      console.log('type', params.value)
       res = await bookGetListByTypeService(params.value)
     }
+    console.log(res)
     books.value = res
     currentPage.value = res.number + 1
     total.value = res.totalElements || 0

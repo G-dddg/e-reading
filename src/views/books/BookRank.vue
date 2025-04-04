@@ -48,6 +48,8 @@ const handleSelect = (item) => {
 //获取书籍列表
 const getBookData = async () => {
   try {
+    isloading.value = true
+    books.value = []
     const res = await bookGetBookRankService(params.value)
     console.log(res)
     books.value = res
@@ -55,6 +57,8 @@ const getBookData = async () => {
   } catch (error) {
     console.error('获取书籍失败:', error)
     return false
+  } finally {
+    isloading.value = false
   }
 }
 onMounted(() => {

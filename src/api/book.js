@@ -20,3 +20,6 @@ export const bookGetBookRankService = ({ category, type }) =>
 //书籍详情
 export const bookGetBookDetailService = (bookId) =>
   request.get(`/book/${bookId}`)
+//获取书籍目录
+export const bookGetChapterListService = (bookId) =>
+  request.get(`/book/${bookId}/toc`)
