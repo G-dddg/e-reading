@@ -11,3 +11,10 @@ export const confirmToken = async () => {
     })
     .catch(() => {})
 }
+
+export const paramsDefault = {
+  page: 0,
+  size: 8,
+  category: 'collection',
+  type: 'total'
+}

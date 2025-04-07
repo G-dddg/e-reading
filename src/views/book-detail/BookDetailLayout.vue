@@ -3,10 +3,27 @@ import { ref, onMounted } from 'vue'
 import MenuHeader from '@/components/MenuHeader.vue'
 import { useRoute } from 'vue-router'
 import { bookGetBookDetailService, bookGetChapterListService } from '@/api/book'
-import { BUIsStarService, BUToggleStarService } from '@/api/book-user'
+import {
+  BUIsStarService,
+  BUToggleStarService,
+  BUGetRecordService
+} from '@/api/book-user'
 import { formatTime } from '@/utils/format'
 import ChaptersList from '@/components/ChaptersList.vue'
 import { Check } from '@element-plus/icons-vue'
+import { useReaderStore } from '@/stores'
+import router from '@/router'
+
+onMounted(async () => {
+  //菜单栏的显示
+  try {
+    const [,] = await Promise.all([getBookDetail(), getChapters()])
+    await getIsStar()
+    await getReadRecord()
+  } catch (error) {
+    console.error('加载书籍详情失败:', error)
+  }
+})
 // 获取路由参数
 const route = useRoute()
 // 书籍信息（静态示例数据）
@@ -15,43 +32,68 @@ const book = ref({})
 //用户是否收藏
 const isStar = ref(false)
 const getIsStar = async () => {
-  const res = await BUIsStarService(bookId)
-  console.log(res)
-  isStar.value = res
+  isStar.value = await BUIsStarService(bookId)
 }
 //改变书籍收藏状态
 const changeStar = async () => {
-  const res = await BUToggleStarService(bookId)
-  console.log(res)
+  await BUToggleStarService(bookId)
   isStar.value = !isStar.value
 }
 //章节列表
 const chapters = ref([])
 const getChapters = async () => {
-  const res = await bookGetChapterListService(bookId)
-  console.log(res)
-  chapters.value = res
+  try {
+    const cached = readerStore.getTOC(bookId) || []
+    if (cached.length > 0) {
+      chapters.value = cached
+    } else {
+      const res = await bookGetChapterListService(bookId)
+      chapters.value = res
+      readerStore.setTOC(bookId, chapters.value)
+    }
+  } catch (error) {
+    console.error('加载章节失败:', error)
+    chapters.value = [] // 容错处理
+  }
 }
-// 菜单
-const menu = ref(null)
+
 // 获取书籍信息
 const getBookDetail = async () => {
   const res = await bookGetBookDetailService(bookId)
-  console.log(res)
   book.value = res
 }
-onMounted(() => {
-  //菜单栏的显示
-  menu.value.open('bookDetail')
-  console.log(bookId)
-  getBookDetail()
-  getChapters()
-  getIsStar()
-})
+//获取用户阅读记录
+const readerStore = useReaderStore()
+const readed = ref({})
+const getReadRecord = async () => {
+  //获取用户阅读记录
+  console.log(readed.value)
+
+  readed.value = readerStore.getProgress(bookId)
+  console.log(readed.value)
+
+  //TODO：云端获取用户阅读记录
+  if (readed.value === null) {
+    try {
+      readed.value = await BUGetRecordService(bookId)
+    } catch {
+      readed.value = null
+    }
+  }
+}
+//点击开始阅读/继续阅读
+const handleRead = () => {
+  //判断是否有阅读记录
+  if (readed.value !== null) {
+    router.push(`/book/${bookId}/chapter/${readed.value}`)
+  } else {
+    router.push(`/book/${bookId}/chapter/${chapters.value[0].chapterId}`)
+  }
+}
 </script>
 <template>
   <!-- 头部菜单 -->
-  <MenuHeader ref="menu"></MenuHeader>
+  <MenuHeader></MenuHeader>
   <!-- 主体内容 -->
   <el-backtop :right="100" :bottom="100" />
   <el-container class="book-detail">
@@ -86,7 +128,10 @@ onMounted(() => {
             </div>
             <p>总页数：{{ book.bookPage }}</p>
             <div class="book-actions">
-              <el-button type="primary">开始阅读</el-button>
+              <el-button type="primary" @click="handleRead">
+                <span v-if="!readed">开始阅读</span>
+                <span v-else>继续阅读</span></el-button
+              >
               <el-button @click="changeStar">
                 <el-icon v-if="isStar"><Check /></el-icon
                 >{{ isStar ? '已收藏' : '加入书架' }}
@@ -109,7 +154,7 @@ onMounted(() => {
         <template #header>
           <h3>目录</h3>
         </template>
-        <ChaptersList :chapters="chapters"></ChaptersList>
+        <ChaptersList :chapters="chapters" :book-id="bookId"></ChaptersList>
       </el-card>
     </el-main>
   </el-container>
@@ -147,9 +192,14 @@ onMounted(() => {
       }
       .book-actions {
         display: flex;
-        justify-content: space-between;
+        gap: 10px;
         margin-top: 20px;
       }
+    }
+  }
+  .book-bookDesc {
+    p {
+      text-indent: 2em;
     }
   }
 }

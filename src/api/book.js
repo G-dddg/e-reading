@@ -23,3 +23,10 @@ export const bookGetBookDetailService = (bookId) =>
 //获取书籍目录
 export const bookGetChapterListService = (bookId) =>
   request.get(`/book/${bookId}/toc`)
+//获取书籍章节内容
+export const bookGetChapterContentService = (params) => {
+  const res = request.get(`/chapter/${params.chapterId}`, {
+    params
+  })
+  return res
+}

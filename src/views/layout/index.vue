@@ -3,11 +3,16 @@ import { Search } from '@element-plus/icons-vue'
 import MenuPerson from '@/components/MenuPerson.vue'
 import { onMounted } from 'vue'
 import { useUserStore } from '@/stores'
+import router from '@/router'
 
 const userStore = useUserStore()
 onMounted(() => {
   userStore.getUser()
 })
+
+const handleSearch = () => {
+  router.push('/books/search')
+}
 </script>
 <template>
   <el-container class="layout-container">
@@ -24,7 +29,9 @@ onMounted(() => {
           :prefix-icon="Search"
           placeholder="请输入书名/作者"
         ></el-input>
-        <el-button type="primary" size="large">搜索</el-button>
+        <el-button type="primary" size="large" @click="handleSearch"
+          >搜索</el-button
+        >
       </div>
     </el-header>
     <el-container>

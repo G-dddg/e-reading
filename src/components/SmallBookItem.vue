@@ -45,6 +45,7 @@ defineProps({
   border-radius: 10px;
   text-align: left;
   margin-bottom: 20px;
+  width: 100%;
   .book-content {
     display: flex;
     align-items: center;

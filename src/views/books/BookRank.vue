@@ -2,8 +2,9 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { bookGetBookRankService } from '@/api/book'
 import LargeBookItem from './components/LargeBookItem.vue'
-import SmallBookItem from './components/SmallBookItem.vue'
+import SmallBookItem from '@/components/SmallBookItem.vue'
 import BookType from './components/BookType.vue'
+import { paramsDefault } from '@/utils/general'
 
 //item类型
 const isLargeScreen = ref(window.innerWidth > 768)
@@ -32,12 +33,8 @@ const handleChange = (value) => {
 }
 
 const isloading = ref(false)
-const paramsDefault = {
-  category: 'collection',
-  type: 'total',
-  limit: number
-}
-const params = ref({ ...paramsDefault })
+
+const params = ref({ ...paramsDefault, limit: number.value })
 //处理选择
 const handleSelect = (item) => {
   item.category

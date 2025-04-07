@@ -6,9 +6,9 @@ import {
   bookGetListByTypeService
 } from '@/api/book'
 import LargeBookItem from './components/LargeBookItem.vue'
-import SmallBookItem from './components/SmallBookItem.vue'
+import SmallBookItem from '@/components/SmallBookItem.vue'
 import BookType from './components/BookType.vue'
-
+import { paramsDefault } from '@/utils/general'
 //item类型
 const isLargeScreen = ref(window.innerWidth > 768)
 const updateScreenSize = () => {
@@ -21,22 +21,19 @@ const books = ref()
 const bookTypes = ref([])
 const isloading = ref(false)
 const total = ref(0)
-const paramsDefault = {
-  page: 0,
-  size: 8
-}
+
 const params = ref({ ...paramsDefault })
 //处理选择分类
 const handleSelect = (item) => {
   params.value.typeName = item.bookTypeName
   params.value.page = 0
-  getBookData(item)
+  getBookData()
 }
 //获取书籍列表
-const getBookData = async (type) => {
+const getBookData = async () => {
   try {
     let res
-    if (!type || type === '全部') {
+    if (!params.value.typeName || params.value.typeName === '全部') {
       res = await bookGetListService(params.value)
     } else {
       res = await bookGetListByTypeService(params.value)

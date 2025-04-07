@@ -7,7 +7,7 @@ const router = createRouter({
     {
       path: '/',
       component: () => import('@/views/layout/index.vue'),
-      redirect: '/books/rank',
+      redirect: '/books/home',
       children: [
         {
           path: '/books/home',
@@ -26,6 +26,14 @@ const router = createRouter({
     {
       path: '/book/:bookId',
       component: () => import('@/views/book-detail/BookDetailLayout.vue')
+    },
+    {
+      path: '/book/:bookId/chapter/:chapterId',
+      component: () => import('@/views/chapter/ChapterContent.vue')
+    },
+    {
+      path: '/book/search',
+      component: () => import('@/views/search/BookSearch.vue')
     }
   ]
 })

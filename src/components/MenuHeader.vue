@@ -19,6 +19,12 @@ const handleLogo = () => {
 defineExpose({
   open
 })
+//搜索框
+const emit = defineEmits(['UpdateBookList'])
+const search = defineModel()
+const handleSearch = () => {
+  emit('UpdateBookList')
+}
 </script>
 <template>
   <div class="navbar">
@@ -38,11 +44,11 @@ defineExpose({
     <!-- 搜索框 -->
     <div class="search-container">
       <el-input
-        v-model="searchQuery"
+        v-model="search"
         placeholder="输入书名/作者"
         class="search-input"
       />
-      <el-button type="primary" @click="search">搜索</el-button>
+      <el-button type="primary" @click="handleSearch">搜索</el-button>
     </div>
 
     <!-- 用户名及下拉菜单 -->
