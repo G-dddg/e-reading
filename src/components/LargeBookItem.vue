@@ -1,15 +1,27 @@
 <script setup>
 import { useRouter } from 'vue-router'
+import { MoreFilled } from '@element-plus/icons-vue'
+
 const router = useRouter()
 defineProps({
   books: {
     type: Array,
     required: true
+  },
+  showStar: {
+    type: Boolean,
+    default: false
   }
 })
+// 取消收藏
+const emit = defineEmits(['cancelStar'])
+const handleStar = (bookId) => {
+  emit('cancelStar', bookId)
+}
+
 const handleClick = (bookId) => {
-  console.log(bookId)
-  router.push(`/book/${bookId}`)
+  const url = router.resolve(`/book/${bookId}`).href
+  window.open(url, '_blank')
 }
 </script>
 <template>
@@ -27,7 +39,24 @@ const handleClick = (bookId) => {
         class="book-card"
         @click="handleClick(item.bookId)"
       >
-        <el-image class="book-cover" :src="item.bookCover" fit="cover" />
+        <div class="header">
+          <el-image class="book-cover" :src="item.bookCover" fit="cover" />
+          <el-dropdown v-if="showStar" trigger="click" class="dropdown-icon">
+            <span @click.stop>
+              <el-icon size="20"><MoreFilled /></el-icon>
+            </span>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item
+                  :icon="Plus"
+                  @click.stop="handleStar(item.bookId)"
+                >
+                  取消收藏
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+        </div>
         <div class="book-info">
           <h3 class="book-title format">{{ item.bookName }}</h3>
           <p class="book-author format">{{ item.author }}</p>
@@ -58,10 +87,12 @@ const handleClick = (bookId) => {
 
 /* 书籍封面 */
 .book-cover {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
   width: 100px;
   height: 150px;
   margin: 0 auto;
-  display: block;
   border-radius: 6px;
 }
 
@@ -106,5 +137,16 @@ const handleClick = (bookId) => {
 /* 书籍分类标签 */
 .book-category {
   font-size: 12px;
+}
+.header {
+  position: relative;
+  height: 150px;
+}
+
+.dropdown-icon {
+  position: absolute;
+  left: 50%;
+  transform: translateX(56px);
+  cursor: pointer;
 }
 </style>

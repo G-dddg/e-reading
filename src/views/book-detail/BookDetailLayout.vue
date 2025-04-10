@@ -10,11 +10,12 @@ import {
 } from '@/api/book-user'
 import { formatTime } from '@/utils/format'
 import ChaptersList from '@/components/ChaptersList.vue'
-import { Check } from '@element-plus/icons-vue'
+import { CircleCheck } from '@element-plus/icons-vue'
 import { useReaderStore } from '@/stores'
 import router from '@/router'
 
 onMounted(async () => {
+  isLoading.value = true
   //菜单栏的显示
   try {
     const [,] = await Promise.all([getBookDetail(), getChapters()])
@@ -22,6 +23,8 @@ onMounted(async () => {
     await getReadRecord()
   } catch (error) {
     console.error('加载书籍详情失败:', error)
+  } finally {
+    isLoading.value = false
   }
 })
 // 获取路由参数
@@ -29,6 +32,8 @@ const route = useRoute()
 // 书籍信息（静态示例数据）
 const bookId = route.params.bookId
 const book = ref({})
+//加载状态
+const isLoading = ref(false)
 //用户是否收藏
 const isStar = ref(false)
 const getIsStar = async () => {
@@ -36,7 +41,7 @@ const getIsStar = async () => {
 }
 //改变书籍收藏状态
 const changeStar = async () => {
-  await BUToggleStarService(bookId)
+  BUToggleStarService(bookId)
   isStar.value = !isStar.value
 }
 //章节列表
@@ -65,26 +70,30 @@ const getBookDetail = async () => {
 //获取用户阅读记录
 const readerStore = useReaderStore()
 const readed = ref({})
+const isReaded = ref(false)
 const getReadRecord = async () => {
   //获取用户阅读记录
-  console.log(readed.value)
-
   readed.value = readerStore.getProgress(bookId)
   console.log(readed.value)
-
-  //TODO：云端获取用户阅读记录
   if (readed.value === null) {
-    try {
-      readed.value = await BUGetRecordService(bookId)
-    } catch {
-      readed.value = null
+    const res = await BUGetRecordService(bookId)
+    console.log(res)
+    if (res.chapterId !== null) {
+      readed.value = res.lastReadPage
     }
+  }
+  console.log(readed.value)
+  if (readed.value !== null) {
+    isReaded.value = true
+  } else {
+    isReaded.value = false
   }
 }
 //点击开始阅读/继续阅读
 const handleRead = () => {
-  //判断是否有阅读记录
-  if (readed.value !== null) {
+  if (chapters.value.length === 0) {
+    ElMessage.warning('暂无章节，请稍后再试')
+  } else if (isReaded.value) {
     router.push(`/book/${bookId}/chapter/${readed.value}`)
   } else {
     router.push(`/book/${bookId}/chapter/${chapters.value[0].chapterId}`)
@@ -96,7 +105,7 @@ const handleRead = () => {
   <MenuHeader></MenuHeader>
   <!-- 主体内容 -->
   <el-backtop :right="100" :bottom="100" />
-  <el-container class="book-detail">
+  <el-container class="book-detail" v-loading="isLoading">
     <el-main>
       <!-- 第一行：书籍封面 + 书籍信息 -->
       <el-card>
@@ -129,11 +138,11 @@ const handleRead = () => {
             <p>总页数：{{ book.bookPage }}</p>
             <div class="book-actions">
               <el-button type="primary" @click="handleRead">
-                <span v-if="!readed">开始阅读</span>
+                <span v-if="!isReaded">开始阅读</span>
                 <span v-else>继续阅读</span></el-button
               >
               <el-button @click="changeStar">
-                <el-icon v-if="isStar"><Check /></el-icon
+                <el-icon v-if="isStar"><CircleCheck /></el-icon
                 >{{ isStar ? '已收藏' : '加入书架' }}
               </el-button>
             </div>

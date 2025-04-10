@@ -18,8 +18,19 @@ const router = createRouter({
           component: () => import('@/views/books/BookRank.vue')
         },
         {
-          path: '/books/bookshelf',
-          component: () => import('@/views/books/BookShelf.vue')
+          path: '/books',
+          component: () => import('@/views/books/shelf/index.vue'),
+          redirect: '/books/shelf',
+          children: [
+            {
+              path: 'shelf',
+              component: () => import('@/views/books/shelf/BookShelf.vue')
+            },
+            {
+              path: 'history',
+              component: () => import('@/views/books/shelf/BookHistory.vue')
+            }
+          ]
         }
       ]
     },

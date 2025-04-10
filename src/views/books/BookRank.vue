@@ -1,18 +1,16 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { bookGetBookRankService } from '@/api/book'
-import LargeBookItem from './components/LargeBookItem.vue'
+import LargeBookItem from '../../components/LargeBookItem.vue'
 import SmallBookItem from '@/components/SmallBookItem.vue'
 import BookType from './components/BookType.vue'
 import { paramsDefault } from '@/utils/general'
 
-//item类型
-const isLargeScreen = ref(window.innerWidth > 768)
-const updateScreenSize = () => {
-  isLargeScreen.value = window.innerWidth > 768
-  console.log(window.innerWidth)
-  console.log(isLargeScreen)
-}
+defineProps({
+  isLargeScreen: {
+    type: Boolean
+  }
+})
 //获取书籍网络请求
 const books = ref([])
 const categories = [
@@ -61,10 +59,6 @@ const getBookData = async () => {
 onMounted(() => {
   params.value = { ...paramsDefault }
   getBookData()
-  window.addEventListener('resize', updateScreenSize)
-})
-onUnmounted(() => {
-  window.removeEventListener('resize', updateScreenSize)
 })
 </script>
 <template>

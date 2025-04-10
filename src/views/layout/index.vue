@@ -1,18 +1,36 @@
 <script setup>
 import { Search } from '@element-plus/icons-vue'
 import MenuPerson from '@/components/MenuPerson.vue'
-import { onMounted } from 'vue'
+import { onMounted, ref, onUnmounted } from 'vue'
 import { useUserStore } from '@/stores'
-import router from '@/router'
+import { useRouter } from 'vue-router'
+import { ElMessage } from 'element-plus'
 
 const userStore = useUserStore()
+
+const search = ref('')
+const router = useRouter()
+const handleSearch = () => {
+  if (search.value.trim() !== '') {
+    router.push(`/book/search?keyword=${search.value.trim()}`)
+  } else {
+    ElMessage.warning('请输入搜索内容')
+  }
+}
+//item
+const isLargeScreen = ref(window.innerWidth > 768)
+const updateScreenSize = () => {
+  isLargeScreen.value = window.innerWidth > 768
+  console.log(window.innerWidth)
+  console.log(isLargeScreen)
+}
 onMounted(() => {
   userStore.getUser()
+  window.addEventListener('resize', updateScreenSize)
 })
-
-const handleSearch = () => {
-  router.push('/books/search')
-}
+onUnmounted(() => {
+  window.removeEventListener('resize', updateScreenSize)
+})
 </script>
 <template>
   <el-container class="layout-container">
@@ -25,8 +43,10 @@ const handleSearch = () => {
       <div v-if="false" class="advertisement">广告暂位</div>
       <div class="search">
         <el-input
+          v-model="search"
           class="search-input"
           :prefix-icon="Search"
+          @keyup.enter="handleSearch"
           placeholder="请输入书名/作者"
         ></el-input>
         <el-button type="primary" size="large" @click="handleSearch"
@@ -49,14 +69,16 @@ const handleSearch = () => {
           <el-menu-item index="/books/rank">
             <span>排行榜</span>
           </el-menu-item>
-          <el-menu-item index="/books/bookshelf">
+          <el-menu-item index="/books">
             <span>我的书架</span>
           </el-menu-item>
         </el-menu>
       </el-header>
       <!-- 主体 -->
       <el-container>
-        <router-view></router-view>
+        <router-view v-slot="{ Component }">
+          <component :is="Component" :isLargeScreen="isLargeScreen"></component>
+        </router-view>
       </el-container>
     </el-container>
   </el-container>
@@ -66,6 +88,7 @@ const handleSearch = () => {
 .layout-container {
   height: 100vh;
   width: 80%;
+  min-width: 700px;
   margin: auto;
   background-color: #ffffff;
   .el-header {
@@ -101,6 +124,10 @@ const handleSearch = () => {
   }
   .el-menu :nth-child(4) {
     margin-left: auto;
+  }
+  .el-menu-item.is-active {
+    color: #409eff;
+    background-color: white !important;
   }
   .logo {
     cursor: pointer;

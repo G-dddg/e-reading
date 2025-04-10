@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, nextTick } from 'vue'
 import { ArrowUp, ArrowDown } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
 import { useReaderStore } from '@/stores'
@@ -11,10 +11,39 @@ const props = defineProps({
     default: () => []
   },
   bookId: {
-    type: String,
+    type: [Number, String],
     required: true
+  },
+  currentChapter: {
+    type: Object,
+    required: false
   }
 })
+//转至当前章节
+const tableRef = ref(null)
+const scrollToCurrentRow = async () => {
+  if (props.currentChapter && props.chapters.length > 0) {
+    await nextTick()
+    const index = sortedChapters.value.findIndex(
+      (item) => item.chapterId === props.currentChapter.chapterId
+    )
+    if (index !== -1 && tableRef.value) {
+      tableRef.value.setCurrentRow(props.currentChapter)
+      nextTick(() => {
+        const wrapper = tableRef.value?.$el?.querySelector(
+          '.el-scrollbar__wrap'
+        )
+        const firstRow = tableRef.value?.$el?.querySelector('.el-table__row')
+        const rowHeight = firstRow.offsetHeight
+        if (wrapper) {
+          wrapper.scrollTop = index * rowHeight
+        }
+      })
+    }
+  }
+}
+
+//排序
 const sort = ref(true) // true: 升序, false: 降序
 const router = useRouter()
 //排序后的数据副本
@@ -34,13 +63,22 @@ const handleCurrentChange = (row) => {
   }
   router.push(`/book/${props.bookId}/chapter/${row.chapterId}`)
 }
+
+onMounted(() => {
+  scrollToCurrentRow()
+})
+
+defineExpose({ scrollToCurrentRow })
 </script>
 
 <template>
   <el-table
     :data="sortedChapters"
-    height="90vh"
+    height="80vh"
+    ref="tableRef"
     highlight-current-row
+    :current-row="currentChapter"
+    row-key="chapterId"
     @current-change="handleCurrentChange"
   >
     <el-table-column

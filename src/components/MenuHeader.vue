@@ -1,12 +1,14 @@
 <script setup>
 import { ref } from 'vue'
 import MenuPerson from '@/components/MenuPerson.vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
+import { ElMessage } from 'element-plus'
 //路由
-const rouster = useRouter()
+const router = useRouter()
+const route = useRoute()
 //菜单跳转
 const handleNav = (path) => {
-  rouster.push(`/books/${path}`)
+  router.push(`/books/${path}`)
 }
 //
 const logo = ref('')
@@ -14,16 +16,24 @@ const open = (type) => {
   logo.value = type
 }
 const handleLogo = () => {
-  logo.value === 'person' ? rouster.push('/person') : rouster.push('/')
+  logo.value === 'person' ? router.push('/person') : router.push('/')
 }
 defineExpose({
   open
 })
 //搜索框
-const emit = defineEmits(['UpdateBookList'])
 const search = defineModel()
 const handleSearch = () => {
-  emit('UpdateBookList')
+  search.value = search.value.trim()
+  if (search.value === '') {
+    ElMessage.warning('请输入搜索内容')
+    return
+  }
+  if (route.path === '/book/search') {
+    router.replace(`/book/search?keyword=${search.value}`)
+  } else {
+    router.push(`/book/search?keyword=${search.value}`)
+  }
 }
 </script>
 <template>
@@ -47,6 +57,7 @@ const handleSearch = () => {
         v-model="search"
         placeholder="输入书名/作者"
         class="search-input"
+        @keyup.enter="handleSearch"
       />
       <el-button type="primary" @click="handleSearch">搜索</el-button>
     </div>
@@ -56,7 +67,7 @@ const handleSearch = () => {
     <el-divider direction="vertical" />
 
     <!-- 我的书架 -->
-    <el-link @click="handleNav('bookshelf')">我的书架</el-link>
+    <el-link @click="handleNav('')">我的书架</el-link>
   </div>
 </template>
 

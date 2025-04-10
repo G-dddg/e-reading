@@ -1,33 +1,6 @@
-<template>
-  <el-card
-    shadow="hover"
-    class="book-card"
-    v-for="item in books"
-    :key="item.bookId"
-  >
-    <div class="book-content">
-      <el-image class="book-cover" :src="item.cover" fit="cover" />
-      <div class="book-info">
-        <h3 class="book-title">{{ item.bookName }}</h3>
-        <p class="book-author">{{ item.author }}</p>
-        <p class="book-description">{{ item.bookDesc }}</p>
-        <div class="book-footer">
-          <el-tag
-            :type="item.isCharge === 1 ? 'success' : 'danger'"
-            class="book-tag"
-            >{{ item.isCharge === 1 ? '收费' : '免费' }}</el-tag
-          >
-          <el-tag class="book-category">{{
-            item.bookType.bookTypeName
-          }}</el-tag>
-          <el-button type="primary">开始阅读</el-button>
-        </div>
-      </div>
-    </div>
-  </el-card>
-</template>
-
 <script setup>
+import { useRouter } from 'vue-router'
+const router = useRouter()
 // 书籍列表
 defineProps({
   books: {
@@ -35,10 +8,46 @@ defineProps({
     required: true
   }
 })
+const handleClick = (bookId) => {
+  const url = router.resolve(`/book/${bookId}`).href
+  window.open(url, '_blank')
+}
 </script>
+<template>
+  <div class="container">
+    <el-card
+      shadow="hover"
+      class="book-card"
+      v-for="item in books"
+      :key="item.bookId"
+    >
+      <div class="book-content">
+        <el-image class="book-cover" :src="item.cover" fit="cover" />
+        <div class="book-info">
+          <h3 class="book-title">{{ item.bookName }}</h3>
+          <p class="book-author">{{ item.author }}</p>
+          <p class="book-description">{{ item.bookDesc }}</p>
+          <div class="book-footer">
+            <el-tag
+              v-if="item.isCharge !== null"
+              :type="item.isCharge === 1 ? 'danger' : 'success'"
+              class="book-tag"
+              >{{ item.isCharge === 1 ? '收费' : '免费' }}</el-tag
+            >
+            <el-tag class="book-category" v-if="!!item.bookType">{{
+              item.bookType.bookTypeName
+            }}</el-tag>
 
+            <el-button type="primary" @click="handleClick(item.bookId)">
+              书籍详情
+            </el-button>
+          </div>
+        </div>
+      </div>
+    </el-card>
+  </div>
+</template>
 <style scoped>
-/* 书籍卡片：横向排列 */
 .book-card {
   align-items: center;
   padding: 16px;
@@ -46,10 +55,10 @@ defineProps({
   text-align: left;
   margin-bottom: 20px;
   width: 100%;
+  box-sizing: border-box;
   .book-content {
     display: flex;
     align-items: center;
-    min-width: 260px;
   }
 }
 

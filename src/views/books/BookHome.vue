@@ -1,21 +1,19 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import {
   bookGetListService,
   bookGetBookTypeService,
   bookGetListByTypeService
 } from '@/api/book'
-import LargeBookItem from './components/LargeBookItem.vue'
+import LargeBookItem from '../../components/LargeBookItem.vue'
 import SmallBookItem from '@/components/SmallBookItem.vue'
 import BookType from './components/BookType.vue'
 import { paramsDefault } from '@/utils/general'
-//item类型
-const isLargeScreen = ref(window.innerWidth > 768)
-const updateScreenSize = () => {
-  isLargeScreen.value = window.innerWidth > 768
-  console.log(window.innerWidth)
-  console.log(isLargeScreen)
-}
+defineProps({
+  isLargeScreen: {
+    type: Boolean
+  }
+})
 //获取书籍网络请求
 const books = ref()
 const bookTypes = ref([])
@@ -86,15 +84,11 @@ const handleCurrentChange = (page) => {
 onMounted(() => {
   params.value = { ...paramsDefault }
   getBooks()
-  window.addEventListener('resize', updateScreenSize)
-})
-onUnmounted(() => {
-  window.removeEventListener('resize', updateScreenSize)
 })
 </script>
 <template>
   <el-container v-loading="isloading" :element-loading-text="'加载中...'">
-    <el-aside width="200px">
+    <el-aside>
       <!-- 分类组件 -->
       <BookType
         :array="bookTypes"

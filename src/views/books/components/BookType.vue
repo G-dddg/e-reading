@@ -84,7 +84,6 @@ onMounted(() => {
 .item {
   align-items: center;
   text-align: center;
-  caret-color: transparent;
 }
 .selected {
   border-radius: 3px;

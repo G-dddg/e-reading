@@ -24,9 +24,5 @@ export const bookGetBookDetailService = (bookId) =>
 export const bookGetChapterListService = (bookId) =>
   request.get(`/book/${bookId}/toc`)
 //获取书籍章节内容
-export const bookGetChapterContentService = (params) => {
-  const res = request.get(`/chapter/${params.chapterId}`, {
-    params
-  })
-  return res
-}
+export const bookGetChapterContentService = (chapterId) =>
+  request.get(`/chapter/${chapterId}`)
