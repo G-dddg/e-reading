@@ -62,6 +62,7 @@ const handleLogin = async () => {
   const res = await userLoginService(dataForm.value)
   console.log(res)
   userStore.setTocken(res)
+  await userStore.getUser()
   ElMessage.success('登录成功')
   const url = route.query.backUrl || '/'
   router.replace(url)

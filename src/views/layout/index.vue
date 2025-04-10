@@ -2,11 +2,8 @@
 import { Search } from '@element-plus/icons-vue'
 import MenuPerson from '@/components/MenuPerson.vue'
 import { onMounted, ref, onUnmounted } from 'vue'
-import { useUserStore } from '@/stores'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-
-const userStore = useUserStore()
 
 const search = ref('')
 const router = useRouter()
@@ -25,7 +22,6 @@ const updateScreenSize = () => {
   console.log(isLargeScreen)
 }
 onMounted(() => {
-  userStore.getUser()
   window.addEventListener('resize', updateScreenSize)
 })
 onUnmounted(() => {

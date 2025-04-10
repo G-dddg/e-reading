@@ -1,4 +1,6 @@
+import { ElMessage } from 'element-plus'
 import { createRouter, createWebHistory } from 'vue-router'
+import { useUserStore } from '@/stores'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -50,3 +52,12 @@ const router = createRouter({
 })
 
 export default router
+
+router.beforeEach((to) => {
+  const userStore = useUserStore()
+  if (!userStore.token && to.path !== '/login') {
+    ElMessage.warning('请先登录')
+    console.log(to.fullPath)
+    return { path: '/login', query: { backUrl: to.fullPath } }
+  }
+})

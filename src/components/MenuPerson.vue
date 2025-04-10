@@ -20,6 +20,7 @@ const handleLogout = async () => {
   userStore.removeUser()
   userStore.removeToken()
   ElMessage.success('退出成功')
+  router.push('/login')
 }
 //登录
 const handleLogin = () => {
