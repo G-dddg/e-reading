@@ -16,11 +16,39 @@ const handleSearch = () => {
 }
 //item
 const isLargeScreen = ref(window.innerWidth > 768)
-const updateScreenSize = () => {
+//节流处理
+const throttle = (fn, delay) => {
+  let lastTime = 0,
+    timer = null
+  return function (...args) {
+    const now = Date().now()
+    if (now - lastTime >= delay) {
+      clearTimeout(timer)
+      fn.apply(this, args)
+      lastTime = now
+    } else if (!timer) {
+      timer = setTimeout(() => {
+        fn.apply(this, args)
+        lastTime = Date.now()
+      }, delay)
+    }
+  }
+}
+//防抖函数
+// const debounce = (fn, delay) => {
+//   let timer = null
+//   return function (...args) {
+//     clearTimeout(timer)
+//     timer = setTimeout(() => {
+//       fn.applay(this, args)
+//     }, delay)
+//   }
+// }
+const updateScreenSize = throttle(() => {
   isLargeScreen.value = window.innerWidth > 768
   console.log(window.innerWidth)
   console.log(isLargeScreen)
-}
+}, 200)
 onMounted(() => {
   window.addEventListener('resize', updateScreenSize)
 })
