@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue'
-import MenuPerson from '@/components/MenuPerson.vue'
+import MenuPerson from '@/components/menu/MenuPerson.vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
 //路由

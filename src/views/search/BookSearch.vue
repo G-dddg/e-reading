@@ -1,9 +1,9 @@
 <script setup>
-import SmallBookItem from '@/components/SmallBookItem.vue'
+import SmallBookItem from '@/components/book/SmallBookItem.vue'
 import { bookGetListService } from '@/api/book'
 import { paramsDefault } from '@/utils/general'
 import { ref, onMounted, watch } from 'vue'
-import MenuHeader from '@/components/MenuHeader.vue'
+import MenuHeader from '@/components/menu/MenuHeader.vue'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()

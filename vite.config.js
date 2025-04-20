@@ -13,7 +13,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        // 代理前缀（根据你的接口路径修改）
+        // 代理前缀
         target: 'http://localhost:8888', // 后端地址
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, '') // 移除代理前缀

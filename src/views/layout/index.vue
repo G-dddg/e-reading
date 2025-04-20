@@ -1,6 +1,6 @@
 <script setup>
 import { Search } from '@element-plus/icons-vue'
-import MenuPerson from '@/components/MenuPerson.vue'
+import MenuPerson from '@/components/menu/MenuPerson.vue'
 import { onMounted, ref, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
@@ -15,13 +15,13 @@ const handleSearch = () => {
   }
 }
 //item
-const isLargeScreen = ref(window.innerWidth > 768)
+const isLargeScreen = ref(window.innerWidth > 800)
 //节流处理
 const throttle = (fn, delay) => {
-  let lastTime = 0,
-    timer = null
+  let lastTime = 0
+  let timer = null
   return function (...args) {
-    const now = Date().now()
+    const now = Date.now()
     if (now - lastTime >= delay) {
       clearTimeout(timer)
       fn.apply(this, args)
@@ -45,7 +45,7 @@ const throttle = (fn, delay) => {
 //   }
 // }
 const updateScreenSize = throttle(() => {
-  isLargeScreen.value = window.innerWidth > 768
+  isLargeScreen.value = window.innerWidth > 800
   console.log(window.innerWidth)
   console.log(isLargeScreen)
 }, 200)
@@ -108,7 +108,7 @@ onUnmounted(() => {
   </el-container>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 .layout-container {
   height: 100vh;
   width: 80%;
@@ -134,7 +134,7 @@ onUnmounted(() => {
       display: flex;
       justify-content: center;
       .search-input {
-        width: 50vw;
+        width: 50%;
         margin-right: 5px;
       }
     }

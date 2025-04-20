@@ -1,7 +1,7 @@
 <script setup>
 import { useRouter } from 'vue-router'
 import { MoreFilled } from '@element-plus/icons-vue'
-
+import CoverImage from './CoverImage.vue'
 const router = useRouter()
 defineProps({
   books: {
@@ -40,7 +40,9 @@ const handleClick = (bookId) => {
         @click="handleClick(item.bookId)"
       >
         <div class="header">
-          <el-image class="book-cover" :src="item.bookCover" fit="cover" />
+          <div class="book-cover">
+            <CoverImage :src="item.bookCover"></CoverImage>
+          </div>
           <el-dropdown v-if="showStar" trigger="click" class="dropdown-icon">
             <span @click.stop>
               <el-icon size="20"><MoreFilled /></el-icon>
@@ -87,9 +89,6 @@ const handleClick = (bookId) => {
 
 /* 书籍封面 */
 .book-cover {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
   width: 100px;
   height: 150px;
   margin: 0 auto;

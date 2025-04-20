@@ -5,8 +5,8 @@ import {
   bookGetBookTypeService,
   bookGetListByTypeService
 } from '@/api/book'
-import LargeBookItem from '../../components/LargeBookItem.vue'
-import SmallBookItem from '@/components/SmallBookItem.vue'
+import LargeBookItem from '@/components/book/LargeBookItem.vue'
+import SmallBookItem from '@/components/book/SmallBookItem.vue'
 import BookType from './components/BookType.vue'
 import { paramsDefault } from '@/utils/general'
 defineProps({

@@ -1,5 +1,5 @@
 <script setup>
-import LargeBookItem from '@/components/LargeBookItem.vue'
+import LargeBookItem from '@/components/book/LargeBookItem.vue'
 import { ref, onMounted } from 'vue'
 import { BUGetStarListService, BUToggleStarService } from '@/api/book-user'
 

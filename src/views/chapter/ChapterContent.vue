@@ -1,5 +1,5 @@
 <script setup>
-import MenuHeader from '@/components/MenuHeader.vue'
+import MenuHeader from '@/components/menu/MenuHeader.vue'
 import { bookGetChapterContentService } from '@/api/book'
 import { BUSaveRecordService } from '@/api/book-user.js'
 import { ref, onMounted, onBeforeUnmount, computed, watch, nextTick } from 'vue'
@@ -14,13 +14,6 @@ import ToolMenu from './components/ToolMenu.vue'
 const route = useRoute()
 const readerStore = useReaderStore()
 
-onBeforeUnmount(() => {
-  //移除事件监听器
-  removeEventListener('keyup', keyboardEvent)
-  //保存进度
-  window.removeEventListener('beforeunload', saveProgress)
-  saveProgress()
-})
 //保存进度
 const saveProgress = async () => {
   //本地保存
@@ -54,8 +47,10 @@ watch(
 )
 //初始化
 const init = async () => {
-  await getChapters()
-  await getContent()
+  loading.value = true
+  Promise.allSettled([getChapters(), getContent()]).finally(() => {
+    loading.value = false
+  })
 }
 //获取书籍目录和当前章节名
 const chapters = ref([])
@@ -143,6 +138,13 @@ onMounted(() => {
   init()
   addEventListener('keyup', keyboardEvent)
 })
+onBeforeUnmount(() => {
+  //移除事件监听器
+  removeEventListener('keyup', keyboardEvent)
+  //保存进度
+  window.removeEventListener('beforeunload', saveProgress)
+  saveProgress()
+})
 </script>
 <template>
   <MenuHeader></MenuHeader>
@@ -171,7 +173,13 @@ onMounted(() => {
       </div>
     </div>
     <!-- 抽屉目录 -->
-    <el-drawer v-model="toc" title="目录" direction="rtl" @open="drawerOpen">
+    <el-drawer
+      v-model="toc"
+      size="360px"
+      title="目录"
+      direction="rtl"
+      @open="drawerOpen"
+    >
       <ChaptersList
         ref="chaptersListRef"
         :chapters="chapters"

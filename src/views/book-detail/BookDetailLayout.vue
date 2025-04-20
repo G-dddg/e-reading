@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import MenuHeader from '@/components/MenuHeader.vue'
+import MenuHeader from '@/components/menu/MenuHeader.vue'
 import { useRoute } from 'vue-router'
 import { bookGetBookDetailService, bookGetChapterListService } from '@/api/book'
 import {

@@ -1,6 +1,7 @@
 <script setup>
 import { useRouter } from 'vue-router'
 const router = useRouter()
+
 // 书籍列表
 defineProps({
   books: {
@@ -8,13 +9,14 @@ defineProps({
     required: true
   }
 })
+
 const handleClick = (bookId) => {
   const url = router.resolve(`/book/${bookId}`).href
   window.open(url, '_blank')
 }
 </script>
 <template>
-  <div class="container">
+  <div class="container" style="overflow: auto">
     <el-card
       shadow="hover"
       class="book-card"
@@ -22,7 +24,10 @@ const handleClick = (bookId) => {
       :key="item.bookId"
     >
       <div class="book-content">
-        <el-image class="book-cover" :src="item.cover" fit="cover" />
+        <div class="book-cover">
+          <CoverImage :src="item.bookCover"></CoverImage>
+        </div>
+
         <div class="book-info">
           <h3 class="book-title">{{ item.bookName }}</h3>
           <p class="book-author">{{ item.author }}</p>

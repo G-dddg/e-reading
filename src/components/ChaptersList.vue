@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, nextTick } from 'vue'
+import { ref, computed, nextTick } from 'vue'
 import { ArrowUp, ArrowDown } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
 import { useReaderStore } from '@/stores'
@@ -64,10 +64,6 @@ const handleCurrentChange = (row) => {
   router.push(`/book/${props.bookId}/chapter/${row.chapterId}`)
 }
 
-onMounted(() => {
-  scrollToCurrentRow()
-})
-
 defineExpose({ scrollToCurrentRow })
 </script>
 
@@ -77,7 +73,6 @@ defineExpose({ scrollToCurrentRow })
     height="80vh"
     ref="tableRef"
     highlight-current-row
-    :current-row="currentChapter"
     row-key="chapterId"
     @current-change="handleCurrentChange"
   >
@@ -96,8 +91,11 @@ defineExpose({ scrollToCurrentRow })
         </el-button>
       </template>
     </el-table-column>
-    <el-table-column prop="chapterName" label="章节名称"></el-table-column>
+    <el-table-column
+      prop="chapterName"
+      label="章节名称"
+      show-overflow-tooltip
+    ></el-table-column>
   </el-table>
 </template>
-
 <style scoped></style>
