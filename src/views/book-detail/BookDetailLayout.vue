@@ -13,19 +13,23 @@ import ChaptersList from '@/components/ChaptersList.vue'
 import { CircleCheck } from '@element-plus/icons-vue'
 import { useReaderStore } from '@/stores'
 import router from '@/router'
+import CoverImage from '@/components/book/CoverImage.vue'
 
 onMounted(async () => {
   isLoading.value = true
   //菜单栏的显示
-  try {
-    const [,] = await Promise.all([getBookDetail(), getChapters()])
-    await getIsStar()
-    await getReadRecord()
-  } catch (error) {
-    console.error('加载书籍详情失败:', error)
-  } finally {
-    isLoading.value = false
-  }
+  Promise.allSettled([
+    getBookDetail(),
+    getChapters(),
+    getIsStar(),
+    getReadRecord()
+  ])
+    .catch((error) => {
+      console.error('加载书籍详情失败:', error)
+    })
+    .finally(() => {
+      isLoading.value = false
+    })
 })
 // 获取路由参数
 const route = useRoute()
@@ -114,7 +118,7 @@ const handleRead = () => {
         </template>
         <div class="book-header">
           <div class="book-cover">
-            <el-image :src="book.bookCover" fit="cover" />
+            <CoverImage :src="book.bookCover" :lazy="false"></CoverImage>
           </div>
           <div class="book-info">
             <h2>{{ book.bookName }}</h2>

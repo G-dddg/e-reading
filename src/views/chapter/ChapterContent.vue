@@ -48,7 +48,7 @@ watch(
 //初始化
 const init = async () => {
   loading.value = true
-  Promise.allSettled([getChapters(), getContent()]).finally(() => {
+  await Promise.allSettled([getChapters(), getContent()]).finally(() => {
     loading.value = false
   })
 }
