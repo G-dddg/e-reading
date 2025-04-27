@@ -23,23 +23,17 @@ const props = defineProps({
 const tableRef = ref(null)
 const scrollToCurrentRow = async () => {
   if (props.currentChapter && props.chapters.length > 0) {
-    await nextTick()
-    const index = sortedChapters.value.findIndex(
-      (item) => item.chapterId === props.currentChapter.chapterId
-    )
-    if (index !== -1 && tableRef.value) {
-      tableRef.value.setCurrentRow(props.currentChapter)
-      nextTick(() => {
-        const wrapper = tableRef.value?.$el?.querySelector(
-          '.el-scrollbar__wrap'
-        )
-        const firstRow = tableRef.value?.$el?.querySelector('.el-table__row')
-        const rowHeight = firstRow.offsetHeight
-        if (wrapper) {
-          wrapper.scrollTop = index * rowHeight
-        }
-      })
-    }
+    tableRef.value.setCurrentRow(props.currentChapter)
+    nextTick(() => {
+      const currentRow = tableRef.value?.$el?.querySelector('.current-row')
+      console.log(currentRow)
+      if (currentRow) {
+        currentRow.scrollIntoView({
+          behavior: 'instant',
+          block: 'start'
+        })
+      }
+    })
   }
 }
 
@@ -74,6 +68,7 @@ defineExpose({ scrollToCurrentRow })
     ref="tableRef"
     highlight-current-row
     row-key="chapterId"
+    current-row-key
     @current-change="handleCurrentChange"
   >
     <el-table-column
